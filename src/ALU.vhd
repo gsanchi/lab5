@@ -63,13 +63,14 @@ architecture Behavioral of ALU is
     signal w_carry  : STD_LOGIC_VECTOR(1 downto 0);
     signal w_B  : STD_LOGIC_VECTOR(7 downto 0);
     signal w_sum  : STD_LOGIC_VECTOR(7 downto 0);
-    signal w_and  : STD_LOGIC_VECTOR(7 downto 0);
-    signal w_or  : STD_LOGIC_VECTOR(7 downto 0);
-    signal w_flags : std_logic_vector(3 downto 0);
-    signal w_result : std_logic_vector(3 downto 0);
+--    signal w_and  : STD_LOGIC_VECTOR(7 downto 0);
+--    signal w_or  : STD_LOGIC_VECTOR(7 downto 0);
+--    signal w_flags : std_logic_vector(3 downto 0);
+    signal w_result : std_logic_vector(7 downto 0);
     
 begin
     
+    w_B <= not i_B when i_op ="000" else i_B;
     
     complete_ALU_0: ripple_adder
     port map(
@@ -90,7 +91,7 @@ begin
     );
     
     
-    w_B <= not i_B when i_op ="000" else i_B;
+    
     
     w_result <= w_sum(7 downto 0) when i_op = "000" else
                 w_sum(7 downto 0) when i_op = "001" else

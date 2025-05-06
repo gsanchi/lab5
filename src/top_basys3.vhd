@@ -32,6 +32,7 @@ entity top_basys3 is
         sw      :   in std_logic_vector(7 downto 0); -- operands and opcode
         btnU    :   in std_logic; -- reset
         btnC    :   in std_logic; -- fsm cycle
+        btnL    :   in std_logic; -- clk cycle
         
         -- outputs
         led :   out std_logic_vector(15 downto 0);
@@ -42,16 +43,65 @@ entity top_basys3 is
     );
 end top_basys3;
 
+
 architecture top_basys3_arch of top_basys3 is 
   
 	-- declare components and signals
+	component controller_fsm is
+	   port(
+	       i_reset : in std_logic;
+	       i_adv   : in std_logic;
+	       o_cycle : out std_logic_vector(3 downto 0)
+	   );
+    end component;
+    
+    component ALU is
+        port(
+          i_A   : in std_logic_vector(7 downto 0);
+          i_B   : in std_logic_vector(7 downto 0);
+          i_op : in STD_LOGIC_VECTOR (2 downto 0);
+          o_result : out STD_LOGIC_VECTOR (7 downto 0);
+          o_flags : out STD_LOGIC_VECTOR (3 downto 0)
+        );
+    end component;
+
+signal w_cycle     : std_logic_vector(3 downto 0);
+signal w_result    : std_logic_vector(7 downto 0);
+
 
   
 begin
 	-- PORT MAPS ----------------------------------------
-
+    controller : controller_fsm
+        port map(
+            i_reset => btnU,
+            i_adv => btnC,
+            o_cycle => w_cycle
+        );
 	
-	
+	--Synchronous Reset
+	register_proc : process(clk)
+    begin
+      if rising_edge(clk) then
+        if btnU = '1' then
+            f_Q = "00";
+        else
+            f_Q <= f_Q_next;
+        end if;
+      end if;
+    end process register_proc;
+    
+    
+    --Asynchronous Reset
+    register_proc : process(clk, btnL)
+    begin   
+        if btnL = '1' then
+            f_Q <= "00";
+        elsif(rising_edge(i_clk)) then
+            f_Q <= f_Q_next;
+        end if;
+    end process register proc;
+            
 	-- CONCURRENT STATEMENTS ----------------------------
 	
 	
