@@ -63,13 +63,13 @@ architecture Behavioral of ALU is
     signal w_carry  : STD_LOGIC_VECTOR(1 downto 0);
     signal w_B  : STD_LOGIC_VECTOR(7 downto 0);
     signal w_sum  : STD_LOGIC_VECTOR(7 downto 0);
---    signal w_and  : STD_LOGIC_VECTOR(7 downto 0);
---    signal w_or  : STD_LOGIC_VECTOR(7 downto 0);
-    --signal w_flags : std_logic_vector(3 downto 0);
+    signal w_and  : STD_LOGIC_VECTOR(7 downto 0);
+    signal w_or  : STD_LOGIC_VECTOR(7 downto 0);
+    signal w_flags : std_logic_vector(3 downto 0);
     signal w_result : std_logic_vector(3 downto 0);
     
 begin
-    w_B <= not i_B when i_op ="000" else i_B;
+    
     
     complete_ALU_0: ripple_adder
     port map(
@@ -90,15 +90,16 @@ begin
     );
     
     
+    w_B <= not i_B when i_op ="000" else i_B;
     
     w_result <= w_sum(7 downto 0) when i_op = "000" else
                 w_sum(7 downto 0) when i_op = "001" else
                 (i_A and i_B) when i_op = "010" else
                 (i_A or i_B) when i_op = "011" else
-                (others => '0');
+                w_sum;
+                
     o_flags(3) <= w_sum(7);
-    o_flags(2) <= '1' when (w_result = "00000000")
-                   else '0';
+    o_flags(2) <= '1' when (w_result = "00000000") else '0';
     o_flags(1) <= w_carry(1) and not(i_op(1));
     o_flags(0) <= not(i_A(7) xor i_B(7) xor i_op(0)) and (i_A(7) xor w_result(7)) and (not i_op(1));
     o_result <= w_result;
