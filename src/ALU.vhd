@@ -50,27 +50,26 @@ architecture Behavioral of ALU is
     end component;
 
 
-    component complete_ALU is
-        port (
-            i_A     : in std_logic;
-            i_B     : in std_logic;
-            i_op    : in std_logic;
-            o_result : in std_logic;
-            o_flags : in std_logic 
-        );
-    end component;
+--    component complete_ALU is
+--        port (
+--            i_A     : in std_logic;
+--            i_B     : in std_logic;
+--            i_op    : in std_logic;
+--            o_result : in std_logic;
+--            o_flags : in std_logic 
+--        );
+--    end component;
             
-    signal w_carry  : STD_LOGIC_VECTOR(2 downto 0);
+    signal w_carry  : STD_LOGIC_VECTOR(1 downto 0);
     signal w_B  : STD_LOGIC_VECTOR(7 downto 0);
     signal w_sum  : STD_LOGIC_VECTOR(7 downto 0);
-    signal w_and  : STD_LOGIC_VECTOR(7 downto 0);
-    signal w_or  : STD_LOGIC_VECTOR(7 downto 0);
-    signal w_flags : std_logic_vector(3 downto 0);
+--    signal w_and  : STD_LOGIC_VECTOR(7 downto 0);
+--    signal w_or  : STD_LOGIC_VECTOR(7 downto 0);
+    --signal w_flags : std_logic_vector(3 downto 0);
     signal w_result : std_logic_vector(3 downto 0);
     
 begin
-    w_B <= not i_B when i_op ="000" 
-    else i_B;
+    w_B <= not i_B when i_op ="000" else i_B;
     
     complete_ALU_0: ripple_adder
     port map(
@@ -89,6 +88,8 @@ begin
         S => w_sum(7 downto 4),
         Cout => w_carry(1)
     );
+    
+    
     
     w_result <= w_sum(7 downto 0) when i_op = "000" else
                 w_sum(7 downto 0) when i_op = "001" else
